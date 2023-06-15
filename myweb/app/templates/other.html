@@ -1,5 +1,28 @@
 {% extends 'base.html' %}
 
+{% block ajax %}
+<script>
+  function param_list() {
+
+    var selectElement = document.getElementById("game_list");
+    var selectedValue = selectElement.value;
+    encodedValue = encodeURIComponent(selectedValue);
+    console.log(selectedValue)
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/get_wagerdiv?game=" + encodedValue, true);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        var response = xhr.responseText;
+        var wagerDiv = document.getElementById("wagerdiv");
+        wagerDiv.innerHTML = response;
+      }
+    };
+    xhr.send();
+  }
+</script>
+{% endblock %}
+
 {% block title %}Other Page{% endblock %}
 
 {% block route %}index{% endblock %}
@@ -17,81 +40,28 @@
     <div class="col-12 col-lg-10 col-xl-8 mx-auto">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">Random Password Generator <i class="fas fa-key"></i></h5>
+          <button class="btn btn-success" id="wager">注單模式</button>
           <hr>
-          <form method="POST" action="/">
-            <div class="form-group form-row">
-              <label for="length" class="col-md-4 col-form-label">
-                Password Length
-              </label>
-              <div class="col-md-8">
-                <input type="number" name="length" class="form-control" id="length" min="4" max="16" value="">
-                <small class="text-muted form-text">Length is available between 4 ~ 16</small>
-              </div>
-            </div>
+          <select class="form-select" name="game_list" id="game_list" aria-label="Default select example"
+            onchange="param_list()">
+            <option selected>選擇遊戲</option>
+            {% for item in game_list %}
+            <option value="{{item}}">{{item}}</option>
+            {% endfor %}
+          </select>
 
-            <div class="form-group form-row mb-2 align-items-center">
-              <label for="lowercase" class="col-md-4 col-form-label">Include Lowercase Characters</label>
-              <div class="col-md-8">
-                <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" id="lowercase" name="lowercase">
-                  <label class="custom-control-label" for="lowercase">(e.g. abcdefg)</label>
-                </div>
-              </div>
-            </div>
 
-            <div class="form-group form-row mb-2 align-items-center">
-              <label for="uppercase" class="col-md-4 col-form-label">Include Uppercase Characters</label>
-              <div class="col-md-8">
-                <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" id="uppercase" name="uppercase">
-                  <label class="custom-control-label" for="uppercase">(e.g. ABCDEFG)</label>
-                </div>
-              </div>
-            </div>
+          <form action="/start_test" methods="POST">
 
-            <div class="form-group form-row mb-2 align-items-center">
-              <label for="numbers" class="col-md-4 col-form-label">Include Numbers</label>
-              <div class="col-md-8">
-                <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" id="numbers" name="numbers">
-                  <label class="custom-control-label" for="numbers">(e.g. 123456)</label>
-                </div>
-              </div>
-            </div>
+            <!-- 生成參數輸入框 -->
+            <div id="wagerdiv"></div>
 
-            <div class="form-group form-row mb-2 align-items-center">
-              <label for="symbols" class="col-md-4 col-form-label">Include Symbols</label>
-              <div class="col-md-8">
-                <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" id="symbols" name="symbols">
-                  <label class="custom-control-label" for="symbols">(e.g. @#$%)</label>
-                </div>
-              </div>
-            </div>
 
-            <div class="form-group form-row">
-              <label for="exclude-characters" class="col-md-4 col-form-label">
-                Exclude Characters
-              </label>
-              <div class="col-md-8">
-                <input type="text" name="excludeCharacters" class="form-control" id="exclude-characters" value="">
-                <small class="text-muted form-text">These characters will not appear in the password</small>
-              </div>
-            </div>
 
-            <div class="alert alert-info" role="alert">
-              <span class="mr-2">Your password is:</span>
-            </div>
 
-            <!-- submit button -->
-            <button class="btn btn-success" type="submit">Generate Password</button>
+            <button class="btn btn-success" type="submit">送出</button>
           </form>
         </div>
-
-        <small class="card-footer text-muted text-right">
-          Idea is inspired by <a href="" target="_blank">Strong Random Password</a>
-        </small>
       </div>
     </div>
   </div>
